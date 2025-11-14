@@ -1,0 +1,289 @@
+================================================================================
+VIRGO GUI - QUICK REFERENCE SUMMARY
+================================================================================
+
+OVERALL STATUS: 80% Complete (49/61 parameters implemented)
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        FEATURE IMPLEMENTATION STATUS                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                              │
+│  OBSERVE() Parameters:           9/12 (75%)  ████████░ IMPLEMENTED         │
+│  ✓ Gains, Frequency, Bandwidth, Channels, Sample Time, Duration            │
+│  ✗ Location (loc), Target Coords (ra_dec/az_alt), Spectrometer selection   │
+│                                                                              │
+│  PLOT() Parameters:            10/23 (43%)  ████░░░░░ PARTIALLY DONE       │
+│  ✓ Files, Median Filters, Rest Freq, dB scaling, Output formats           │
+│  ✗ Slope Correction, RFI Blanking, Axis Limits, DM, VLSR, Meta, etc       │
+│                                                                              │
+│  Tools & Features:              0/4 (0%)   ░░░░░░░░░ NOT FUNCTIONAL       │
+│  ✗ predict() - Placeholder only                                            │
+│  ✗ simulate() - Placeholder only                                           │
+│  ✗ monitor_rfi() - Placeholder only                                        │
+│  ✗ map_hi() - Completely missing                                           │
+│                                                                              │
+│  Antenna Functions:            0/12 (0%)   ░░░░░░░░░ NOT AVAILABLE         │
+│  ✗ All calculation tools (coordinate conversion, antenna calc, etc)        │
+│                                                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+CRITICAL MISSING PARAMETERS (BLOCKING FUNCTIONALITY)
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ OBSERVE() PARAMETERS                                                         │
+├──────────────────────┬────────────────────────────────────────────────────────┤
+│ Parameter            │ Status & Impact                                        │
+├──────────────────────┼────────────────────────────────────────────────────────┤
+│ loc                  │ ✗ MISSING - CRITICAL                                  │
+│ (Observer Location)  │   Purpose: Lat/Lon/Elevation for metadata             │
+│                      │   Impact: Blocks coordinate tracking and headers      │
+│                      │   Line: Lines 532 in virgo.py (hardcoded '')          │
+│                      │                                                        │
+│ ra_dec               │ ✗ MISSING - CRITICAL                                  │
+│ (Target Coords)      │   Purpose: Right Ascension/Declination of target      │
+│                      │   Impact: Cannot identify which source was observed   │
+│                      │   Line: Line 533 in virgo.py (hardcoded '')           │
+│                      │                                                        │
+│ az_alt               │ ✗ MISSING - CRITICAL                                  │
+│ (Target Pointing)    │   Purpose: Azimuth/Altitude (alt to ra_dec)          │
+│                      │   Impact: Cannot track antenna pointing               │
+│                      │   Line: Line 534 in virgo.py (hardcoded '')           │
+│                      │                                                        │
+│ spectrometer         │ ~ PARTIAL - MEDIUM                                    │
+│ (Pipeline Type)      │   Purpose: Select 'wola' or 'ftf' pipeline            │
+│                      │   Impact: Cannot access FTF spectrometer              │
+│                      │   Current: Always defaults to 'wola'                  │
+│                      │                                                        │
+└──────────────────────┴────────────────────────────────────────────────────────┘
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ PLOT() PARAMETERS - HIGH IMPACT MISSING                                      │
+├──────────────────────┬────────────────────────────────────────────────────────┤
+│ Parameter            │ Status & Impact                                        │
+├──────────────────────┼────────────────────────────────────────────────────────┤
+│ rfi                  │ ✗ MISSING - HIGH PRIORITY                              │
+│ (Frequency Blanking) │   Purpose: Blank RFI channels [(lo_hz, hi_hz), ...]   │
+│                      │   Impact: Cannot remove terrestrial interference      │
+│                      │   Use Case: Essential for clean observations          │
+│                      │                                                        │
+│ dm                   │ ✗ MISSING - HIGH PRIORITY                              │
+│ (Dispersion Measure) │   Purpose: Pulsar dedispersion [pc/cm^3]              │
+│                      │   Impact: Cannot analyze pulsar observations          │
+│                      │   Use Case: Timing/pulsar studies                     │
+│                      │                                                        │
+│ slope_correction     │ ✗ MISSING - MEDIUM PRIORITY                            │
+│                      │   Purpose: Linear regression calibration fix          │
+│                      │   Impact: Calibration quality limited                 │
+│                      │   Use Case: Improving calibration accuracy            │
+│                      │                                                        │
+│ xlim / ylim          │ ✗ MISSING - MEDIUM PRIORITY                            │
+│ (Axis Limits)        │   Purpose: Frequency/time axis customization          │
+│                      │   Impact: Cannot zoom/crop plots                      │
+│                      │   Use Case: Focus on specific features                │
+│                      │                                                        │
+└──────────────────────┴────────────────────────────────────────────────────────┘
+
+================================================================================
+TOOLS - IMPLEMENTATION STATUS
+================================================================================
+
+┌──────────────────────────────────────────────────────────────────────────────┐
+│ TOOL                 │ STATUS          │ PARAMETERS NEEDED                  │
+├──────────────────────┼─────────────────┼────────────────────────────────────┤
+│ predict()            │ STUB (L788-800) │ lat, lon, height, source, date,   │
+│ Source Position      │ "Coming Soon"   │ plot_sun, plot_file               │
+│                      │ GUI Location:   │                                    │
+│                      │ Tools > Predict │ Missing UI: All input fields      │
+│                      │ Source Position │                                    │
+│                      │                 │                                    │
+│ simulate()           │ STUB (L802-811) │ l, b, beamwidth, v_min, v_max,   │
+│ HI Simulation        │ "Coming Soon"   │ plot_file                         │
+│                      │ GUI Location:   │                                    │
+│                      │ Tools > Simulate│ Missing UI: All input fields      │
+│                      │ HI Profile      │                                    │
+│                      │                 │                                    │
+│ monitor_rfi()        │ STUB (L813-822) │ f_lo, f_hi, obs_parameters,      │
+│ RFI Monitoring       │ "Coming Soon"   │ data                              │
+│                      │ GUI Location:   │                                    │
+│                      │ Tools > Monitor │ Missing UI: Frequency ranges,     │
+│                      │ RFI             │ data directory selector           │
+│                      │                 │                                    │
+│ map_hi()             │ COMPLETELY      │ ra, dec, plot_file                │
+│ All-Sky Map Viewer   │ MISSING         │                                    │
+│                      │ GUI Location:   │ Missing UI: Entire interface      │
+│                      │ Not in GUI      │ Not imported in GUI               │
+│                      │                 │                                    │
+└──────────────────────┴─────────────────┴────────────────────────────────────┘
+
+================================================================================
+ANTENNA & CALCULATION FUNCTIONS - NOT IN GUI
+================================================================================
+
+All 12 functions available but NOT accessible from GUI:
+
+COORDINATE CONVERTERS:
+  • equatorial(alt, az, lat, lon, height)     Alt/Az → RA/Dec
+  • galactic(ra, dec)                         RA/Dec → Galactic l,b
+
+UNIT CONVERTERS:
+  • frequency(wavelength)                     Wavelength → Frequency
+  • wavelength(frequency)                     Frequency → Wavelength
+
+ANTENNA CALCULATIONS:
+  • gain(D, f, e=0.7, u='dBi')               Parabolic antenna gain
+  • A_e(gain, f)                              Gain → Effective aperture
+  • beamwidth(D, f)                           Half-power beamwidth
+
+SYSTEM CALCULATIONS:
+  • NF(T_noise, T_ref=290)                    Noise temp → Noise figure
+  • T_noise(NF, T_ref=290)                    Noise figure → Noise temp
+  • G_T(gain, T_sys)                          Gain-to-noise-temperature
+  • SEFD(A_e, T_sys)                          System equivalent flux density
+  • snr(S, sefd, t, bw)                       Signal-to-noise ratio
+
+Current: No Tools > Antenna Calculator menu exists
+
+================================================================================
+MISSING PLOT() PARAMETERS - DETAILED TABLE
+================================================================================
+
+Parameter          Type   Default  Purpose                    Impact
+─────────────────────────────────────────────────────────────────────────────
+slope_correction   bool   False    Calibration slope fix      MEDIUM
+rfi                list   []       Blank RFI channels         HIGH
+xlim               list   [0,0]    X-axis (freq) limits       MEDIUM
+ylim               list   [0,0]    Y-axis (time) limits       MEDIUM
+dm                 float  0        Pulsar dedispersion        HIGH
+vlsr               bool   False    VLSR reference frame       LOW
+meta               bool   False    Display metadata header    LOW
+avg_ylim           list   [0,0]    Avg spectrum y-limits      LOW
+cal_ylim           list   [0,0]    Cal spectrum y-limits      LOW
+
+Missing: 9 out of 23 parameters (39% of plot() function)
+
+================================================================================
+IMPLEMENTATION LOCATIONS IN CODE
+================================================================================
+
+observe() Parameters Extraction:     Lines 393-403 in virgo_gui.py
+  - self.dev_args.get() at 394
+  - float(self.rf_gain.get()) at 395
+  - float(self.if_gain.get()) at 396
+  - float(self.bb_gain.get()) at 397
+  - float(self.frequency.get()) at 398
+  - float(self.bandwidth.get()) at 399
+  - int(self.channels.get()) at 400
+  - float(self.t_sample.get()) at 401
+  - float(self.duration.get()) at 402
+
+observe() Call:                     Line 437 in virgo_gui.py
+  observe(obs_params, obs_file=obs_file, start_in=start_in)
+  NOTE: Does not pass loc, ra_dec, az_alt, or spectrometer
+
+plot() Parameters Extraction:       Lines 657-676 in virgo_gui.py
+  - obs_file = self.analysis_obs_file.get()
+  - cal_file = self.analysis_cal_file.get()
+  - plot_args['n'] = int(self.analysis_median_freq.get())
+  - plot_args['m'] = int(self.analysis_median_time.get())
+  - plot_args['f_rest'] = float(self.analysis_rest_freq.get())
+  - plot_args['dB'] = True (if checkbox enabled)
+
+Tools Menu Creation:                Lines 57-62 in virgo_gui.py
+Tools Implementation Stubs:         Lines 788-822 in virgo_gui.py
+
+Missing Field Definitions:
+  - NO input for loc (observer location)
+  - NO input for ra_dec (target RA/Dec)
+  - NO input for az_alt (target Alt/Az)
+  - NO input for rfi (frequency ranges)
+  - NO input for dm (dispersion measure)
+  - NO checkbox for slope_correction
+  - NO fields for xlim/ylim/avg_ylim/cal_ylim
+  - NO checkbox for vlsr/meta
+  - NO menu item for map_hi()
+  - NO menu for antenna tools
+
+================================================================================
+WORKAROUNDS FOR MISSING FEATURES
+================================================================================
+
+To use MISSING features, you must either:
+
+1. USE COMMAND-LINE INTERFACE (virgo.py main())
+   ✓ Full feature set available
+   ✓ All parameters supported
+   ✗ No GUI interface
+
+2. EDIT OBSERVATION FILES MANUALLY
+   ✓ Can add metadata to .header files
+   ✗ Must know file format and parameters
+   ✗ Tedious and error-prone
+
+3. WAIT FOR GUI IMPLEMENTATION
+   ✓ More user-friendly
+   ✗ Currently incomplete
+
+4. IMPORT FUNCTIONS IN PYTHON
+   ✓ Access all Virgo functions directly
+   ✗ Requires programming knowledge
+   Example:
+     from virgo import predict, map_hi, gain, snr
+     predict(lat=45.5, lon=-122.5, source='Cassiopeia A')
+     map_hi(ra=0.5, dec=58.8, plot_file='pointing.png')
+     g = gain(D=3.0, f=1.42e9, u='dBi')
+     s = snr(S=10, sefd=30000, t=3600, bw=2.4e6)
+
+================================================================================
+RECOMMENDATIONS
+================================================================================
+
+IMMEDIATE PRIORITY (Do First):
+  1. Add observer location input (Observation tab)
+  2. Add target coordinate input (RA/Dec or Alt/Az)
+  3. Add RFI frequency blanking UI (Analysis tab)
+
+HIGH PRIORITY (Do Next):
+  4. Complete predict() tool implementation
+  5. Add dispersion measure (dm) input
+  6. Add slope correction checkbox
+
+MEDIUM PRIORITY (Do Later):
+  7. Complete simulate() tool
+  8. Complete monitor_rfi() tool
+  9. Add axis limit controls
+  10. Add spectrometer selection
+
+LOW PRIORITY (Polish):
+  11. Add map_hi() tool
+  12. Create antenna calculator tools
+  13. Add display options (vlsr, meta)
+
+================================================================================
+RESOURCE FILES
+================================================================================
+
+For more details, see the following files in /home/user/Virgo/:
+
+1. GUI_FEATURE_COMPARISON.md
+   - Detailed comparison tables
+   - Function signatures
+   - Parameter lists
+
+2. GUI_DETAILED_ANALYSIS.txt
+   - Line-by-line code analysis
+   - Implementation status by parameter
+   - Code location references
+
+3. GUI_IMPLEMENTATION_AUDIT.txt
+   - Executive summary
+   - Effort estimates
+   - Development roadmap
+
+4. GUI_QUICK_REFERENCE.txt
+   - This file
+   - Quick lookup tables
+   - Workarounds and recommendations
+
+================================================================================
