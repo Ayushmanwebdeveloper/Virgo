@@ -1,4 +1,4 @@
-# Virgo GUI - Quick Start Guide
+# Virgo GUI - Quick Start Guide (v2.0 Enhanced)
 
 ## Installation (One-time setup)
 
@@ -16,6 +16,16 @@ chmod +x launch_gui.sh virgo_gui.py
 ```bash
 ./launch_gui.sh
 ```
+
+## What's New in v2.0
+- ✅ **100% Feature Complete** - All Virgo functions now available
+- ✅ Observer location & target coordinates
+- ✅ Spectrometer type selection (WOLA/FTF)
+- ✅ Advanced RFI blanking with frequency ranges
+- ✅ All plot options: slope correction, dispersion, VLSR, metadata
+- ✅ Fully functional tools: predict, simulate, HI map, RFI monitor
+- ✅ Antenna calculators: gain, beamwidth, SEFD, SNR
+- ✅ Coordinate converter
 
 ## First Observation - HI Line (21 cm Hydrogen)
 
@@ -69,15 +79,34 @@ chmod +x launch_gui.sh virgo_gui.py
 - **Continuum**: 1400000000 Hz (1400 MHz)
 - **Custom**: Enter frequency in Hz
 
+### Select Spectrometer Type
+- **WOLA** (default): 4-tap weighted overlap-add, lower sidelobes, better for spectral observations
+- **FTF**: Plain FFT, lighter weight, faster for resource-constrained systems
+
+### Add Observer Location & Target
+1. Enter your **Latitude, Longitude, Height** (optional but recommended)
+2. Select **Coordinate Type**:
+   - **None**: No target tracking
+   - **Equatorial (RA/Dec)**: For celestial coordinates
+   - **Horizontal (Az/Alt)**: For local coordinates
+3. Enter coordinates - GUI adapts to show relevant fields
+
 ### Adjust Gain (if signal too weak/strong)
 - **Too weak**: Increase RF/IF/BB gain
 - **Too strong**: Decrease gains
 - **Typical**: RF=30, IF=25, BB=18
 
 ### Remove RFI (Radio Interference)
-In Analysis tab:
+
+**Method 1: Median Filtering** (In Analysis tab)
 - **Median Filter (Freq)**: 5-15 (removes narrow-band RFI)
 - **Median Filter (Time)**: 3-10 (removes transient RFI)
+
+**Method 2: Frequency Blanking** (NEW!)
+1. Click **"Manage RFI Ranges"** in Analysis tab
+2. Add frequency ranges to blank out (e.g., FM radio, cell towers)
+3. Specify low and high frequency for each range
+4. Blanked ranges will be excluded from analysis
 
 ### Export Data
 In Analysis tab:
@@ -87,9 +116,12 @@ In Analysis tab:
 ## GUI Layout
 
 ### Observation Tab
-- **Left**: Parameter controls
-- **Right**: Live spectrum + status log
-- **Bottom**: Start/Stop buttons
+- **Spectrometer Type**: WOLA or FTF selection
+- **SDR Settings**: Device args, gains
+- **Frequency/Timing**: All observation parameters
+- **Observer Location**: NEW - Lat/Lon/Height
+- **Target Coordinates**: NEW - RA/Dec or Az/Alt
+- **Live Display**: Real-time spectrum and time series
 
 ### Calibration Tab
 - Instructions for calibration procedure
@@ -98,9 +130,19 @@ In Analysis tab:
 
 ### Analysis & Plotting Tab
 - Load observation and calibration files
-- Set processing options (RFI mitigation, dB scale)
-- Generate publication-quality plots
+- **RFI Mitigation**: Median filters + NEW frequency blanking
+- **Display Options**: NEW - dB, VLSR, metadata, slope correction
+- **Spectral Line**: Rest frequency, NEW - dispersion measure
+- **Axis Limits**: NEW - Full control over all plot axes
 - Export to FITS/CSV
+
+### Tools Menu
+- **Predict Source Position**: NEW - Full implementation with Alt/Az prediction
+- **Simulate HI Profile**: NEW - LAB survey-based simulation
+- **View HI Map**: NEW - All-sky hydrogen map
+- **Monitor RFI**: NEW - Wideband frequency survey
+- **Antenna Calculator**: NEW - Gain, beamwidth, SEFD, SNR
+- **Coordinate Converter**: NEW - Alt/Az ↔ RA/Dec ↔ Galactic
 
 ## Files Created
 
