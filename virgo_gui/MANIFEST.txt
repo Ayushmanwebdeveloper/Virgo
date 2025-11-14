@@ -1,0 +1,44 @@
+VIRGO GUI - FILE MANIFEST
+=========================
+
+This folder contains everything you need for the Virgo GUI.
+
+REQUIRED FILES (must download):
+  ✓ virgo_gui.py              - Main application (71KB)
+  ✓ launch_gui.sh             - Launcher script
+  ✓ requirements.txt          - Python dependencies
+  ✓ README.md                 - This folder's overview
+
+DOCUMENTATION (recommended):
+  ✓ USER_GUIDE.md             - Complete manual (12KB)
+  ✓ INSTALL.md                - Installation guide (4KB)
+  ✓ QUICKSTART.md             - Quick reference (6.5KB)
+  ✓ CHANGELOG.md              - Version history (5KB)
+  ✓ COMPLETION_SUMMARY.md     - Feature list (11KB)
+
+OPTIONAL:
+  ✓ virgo-gui.desktop         - Desktop launcher (for Linux)
+  ✓ analysis_docs/            - Development analysis files
+
+TOTAL SIZE: ~150KB (without analysis docs)
+
+HOW TO DOWNLOAD:
+================
+
+Option 1: Download entire folder
+  - Clone the repository and grab the virgo_gui/ folder
+  - Or download as ZIP from GitHub
+
+Option 2: Download files individually
+  - Download all files listed above under "REQUIRED FILES"
+  - Optionally download documentation files
+
+INSTALLATION:
+=============
+
+See INSTALL.md for complete instructions.
+
+Quick version:
+  1. sudo apt-get install python3-tk python3-pip
+  2. pip3 install -r requirements.txt
+  3. ./launch_gui.sh

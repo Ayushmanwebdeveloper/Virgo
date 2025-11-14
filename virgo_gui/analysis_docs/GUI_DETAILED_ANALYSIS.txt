@@ -1,0 +1,492 @@
+================================================================================
+DETAILED VIRGO GUI IMPLEMENTATION ANALYSIS
+================================================================================
+
+File: /home/user/Virgo/virgo_gui.py (851 lines)
+References: virgo/virgo.py function signatures & docs/source/reference.rst
+
+================================================================================
+1. OBSERVATION PARAMETERS - DETAILED BREAKDOWN
+================================================================================
+
+OBSERVE() PARAMETER: dev_args (Device Arguments)
+  Documentation: gr-osmosdr device arguments string
+  GUI Implementation: Lines 115-118
+    - Field: self.dev_args = ttk.Entry
+    - Default value: "rtl=0"
+    - Status: IMPLEMENTED
+    - Code: self.dev_args.get() at line 394
+
+OBSERVE() PARAMETER: rf_gain (RF Gain in dB)
+  Documentation: RF gain in dB
+  GUI Implementation: Lines 120-123
+    - Field: self.rf_gain = ttk.Entry
+    - Default value: "30"
+    - Status: IMPLEMENTED
+    - Code: float(self.rf_gain.get()) at line 395
+
+OBSERVE() PARAMETER: if_gain (IF Gain in dB)
+  Documentation: IF gain in dB
+  GUI Implementation: Lines 125-128
+    - Field: self.if_gain = ttk.Entry
+    - Default value: "25"
+    - Status: IMPLEMENTED
+    - Code: float(self.if_gain.get()) at line 396
+
+OBSERVE() PARAMETER: bb_gain (Baseband Gain in dB)
+  Documentation: Baseband gain in dB
+  GUI Implementation: Lines 130-133
+    - Field: self.bb_gain = ttk.Entry
+    - Default value: "18"
+    - Status: IMPLEMENTED
+    - Code: float(self.bb_gain.get()) at line 397
+
+OBSERVE() PARAMETER: frequency (Center Frequency in Hz)
+  Documentation: Center frequency [Hz], REQUIRED
+  GUI Implementation: Lines 138-141
+    - Field: self.frequency = ttk.Entry
+    - Default value: "1420405752" (HI line)
+    - Status: IMPLEMENTED
+    - Code: float(self.frequency.get()) at line 398
+    - Validation: Marked as REQUIRED at line 387
+
+OBSERVE() PARAMETER: bandwidth (Instantaneous Bandwidth in Hz)
+  Documentation: Instantaneous bandwidth [Hz], REQUIRED
+  GUI Implementation: Lines 143-146
+    - Field: self.bandwidth = ttk.Entry
+    - Default value: "2400000"
+    - Status: IMPLEMENTED
+    - Code: float(self.bandwidth.get()) at line 399
+    - Validation: Marked as REQUIRED at line 387
+
+OBSERVE() PARAMETER: channels (Number of Frequency Channels)
+  Documentation: Number of frequency channels (FFT size), REQUIRED
+  GUI Implementation: Lines 148-151
+    - Field: self.channels = ttk.Entry
+    - Default value: "2048"
+    - Status: IMPLEMENTED
+    - Code: int(self.channels.get()) at line 400
+    - Validation: Marked as REQUIRED at line 387
+
+OBSERVE() PARAMETER: t_sample (Integration Time per FFT Sample)
+  Documentation: Integration time per FFT sample in seconds, REQUIRED
+  GUI Implementation: Lines 156-159
+    - Field: self.t_sample = ttk.Entry
+    - Default value: "1.0"
+    - Status: IMPLEMENTED
+    - Code: float(self.t_sample.get()) at line 401
+    - Validation: Marked as REQUIRED at line 387
+
+OBSERVE() PARAMETER: duration (Total Observing Duration)
+  Documentation: Total observing duration [sec]
+  GUI Implementation: Lines 161-164
+    - Field: self.duration = ttk.Entry
+    - Default value: "60"
+    - Status: IMPLEMENTED
+    - Code: float(self.duration.get()) at line 402
+
+OBSERVE() PARAMETER: loc (Observer Location)
+  Documentation: Latitude, longitude, and elevation of observation
+               (string: floats separated by spaces)
+  GUI Implementation: MISSING - No field for location input
+    - Status: NOT IMPLEMENTED
+    - Currently hardcoded in observe() call at line 437:
+      observe(obs_params, obs_file=obs_file, start_in=start_in)
+    - Default in virgo.py: '' (empty string)
+    - Impact: CRITICAL - Disables coordinate-based metadata tracking
+
+OBSERVE() PARAMETER: ra_dec (Right Ascension and Declination)
+  Documentation: Right ascension and declination of target
+               (string: floats separated by spaces)
+  GUI Implementation: MISSING - No field for target RA/Dec
+    - Status: NOT IMPLEMENTED
+    - Currently hardcoded in observe() call at line 437
+    - Default in virgo.py: '' (empty string)
+    - Impact: CRITICAL - Target coordinates not tracked
+
+OBSERVE() PARAMETER: az_alt (Azimuth and Altitude)
+  Documentation: Azimuth and altitude of target
+               (string: floats separated by spaces, takes precedence over ra_dec)
+  GUI Implementation: MISSING - No field for target Az/Alt
+    - Status: NOT IMPLEMENTED
+    - Currently hardcoded in observe() call at line 437
+    - Default in virgo.py: '' (empty string)
+    - Impact: CRITICAL - Target pointing not tracked
+
+OBSERVE() PARAMETER: spectrometer (Pipeline Selection)
+  Documentation: Spectrometer flowchart/pipeline ('WOLA' or 'FTF')
+  GUI Implementation: MISSING - Not configurable
+    - Status: NOT IMPLEMENTED
+    - Always uses default 'wola' when observe() is called
+    - Code at line 437 doesn't pass spectrometer parameter
+    - Impact: MEDIUM - Users cannot select FTF pipeline
+
+================================================================================
+2. PLOT PARAMETERS - DETAILED BREAKDOWN
+================================================================================
+
+PLOT() PARAMETER: obs_file (Input Observation Filename)
+  Documentation: Input observation filename (generated with virgo.observe)
+  GUI Implementation: Lines 652-655 (Analysis tab)
+    - Field: self.analysis_obs_file = ttk.Entry
+    - Browse functionality: Lines 615-623
+    - Status: IMPLEMENTED
+    - Code: obs_file = self.analysis_obs_file.get() at line 652
+
+PLOT() PARAMETER: cal_file (Calibration Filename)
+  Documentation: Input calibration filename (generated with virgo.observe)
+  GUI Implementation: Lines 327-330 (Analysis tab)
+    - Field: self.analysis_cal_file = ttk.Entry
+    - Browse functionality: Lines 625-633
+    - Status: IMPLEMENTED
+    - Code: cal_file = self.analysis_cal_file.get() at line 664
+
+PLOT() PARAMETER: n (Median Filter Factor - Frequency Domain)
+  Documentation: Median filter factor (spectrum)
+  GUI Implementation: Lines 336-338 (Analysis tab)
+    - Field: self.analysis_median_freq = ttk.Entry
+    - Status: IMPLEMENTED
+    - Code: plot_args['n'] = int(self.analysis_median_freq.get()) at line 669
+    - Also in Observation tab: Lines 205-207
+    - Code: plot_args['n'] = int(self.median_freq.get()) at line 564
+
+PLOT() PARAMETER: m (Median Filter Factor - Time Domain)
+  Documentation: Median filter factor (time series)
+  GUI Implementation: Lines 340-342 (Analysis tab)
+    - Field: self.analysis_median_time = ttk.Entry
+    - Status: IMPLEMENTED
+    - Code: plot_args['m'] = int(self.analysis_median_time.get()) at line 671
+    - Also in Observation tab: Lines 209-211
+    - Code: plot_args['m'] = int(self.median_time.get()) at line 566
+
+PLOT() PARAMETER: f_rest (Rest Frequency)
+  Documentation: Spectral line reference frequency used for radial velocity
+               (Doppler shift) calculations [Hz]
+  GUI Implementation: Lines 347-350 (Analysis tab)
+    - Field: self.analysis_rest_freq = ttk.Entry
+    - Default: "1420405752"
+    - Status: IMPLEMENTED
+    - Code: plot_args['f_rest'] = float(self.analysis_rest_freq.get()) at line 675
+    - Also in Observation tab: Lines 213-216
+    - Code: plot_args['f_rest'] = float(self.rest_frequency.get()) at line 560
+
+PLOT() PARAMETER: dB (Decibel Scaling)
+  Documentation: Display data in decibel scaling
+  GUI Implementation: Lines 344-345 (Analysis tab)
+    - Field: self.analysis_db = tk.BooleanVar
+    - Status: IMPLEMENTED
+    - Code: plot_args['dB'] = True at line 673
+    - Also in Observation tab: Lines 202-203
+    - Code: plot_args['dB'] = True at line 562
+
+PLOT() PARAMETER: waterfall_fits (FITS Waterfall Output Filename)
+  Documentation: Output FITS filename
+  GUI Implementation: Lines 179-182 (Observation tab)
+    - Field: self.waterfall_fits = ttk.Entry
+    - Default: "waterfall.fits"
+    - Status: IMPLEMENTED
+    - Code: plot_args['waterfall_fits'] = self.waterfall_fits.get() at line 554
+    - Also in Analysis tab via export_fits(): Lines 697-725
+    - Uses plot() with waterfall_fits parameter
+
+PLOT() PARAMETER: spectra_csv (Spectra CSV Output Filename)
+  Documentation: Output CSV filename (spectra)
+  GUI Implementation: Lines 184-187 (Observation tab)
+    - Field: self.spectra_csv = ttk.Entry
+    - Default: "spectra.csv"
+    - Status: IMPLEMENTED
+    - Code: plot_args['spectra_csv'] = self.spectra_csv.get() at line 556
+    - Also in Analysis tab via export_csv(): Lines 730-761
+
+PLOT() PARAMETER: power_csv (Power CSV Output Filename)
+  Documentation: Output CSV filename (time series)
+  GUI Implementation: Lines 189-192 (Observation tab)
+    - Field: self.power_csv = ttk.Entry
+    - Default: "power.csv"
+    - Status: IMPLEMENTED
+    - Code: plot_args['power_csv'] = self.power_csv.get() at line 558
+
+PLOT() PARAMETER: plot_file (Output Plot Filename)
+  Documentation: Output plot filename
+  GUI Implementation: Lines 194-197 (Observation tab)
+    - Field: self.plot_file = ttk.Entry
+    - Default: "plot.png"
+    - Status: IMPLEMENTED
+    - Code: plot_file = self.plot_file.get() or "plot.png" at line 544
+    - Analysis tab: Lines 352-355
+
+PLOT() PARAMETER: slope_correction (Slope Correction for Calibration)
+  Documentation: Correct slope in poorly-calibrated spectra using linear regression
+  GUI Implementation: MISSING - No checkbox or field
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: False
+    - Impact: MEDIUM - Calibration quality enhancement unavailable
+
+PLOT() PARAMETER: rfi (RFI Frequency Blanking)
+  Documentation: Blank frequency channels contaminated with RFI
+               (list of tuples: [(lo_freq, hi_freq)] in Hz)
+  GUI Implementation: MISSING - No field for RFI ranges
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: []
+    - Impact: HIGH - RFI mitigation not available in GUI
+
+PLOT() PARAMETER: xlim (X-axis Frequency Limits)
+  Documentation: x-axis limits ([low_frequency, high_frequency]) [Hz]
+  GUI Implementation: MISSING - No frequency range selector
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: [0, 0]
+    - Impact: MEDIUM - Cannot zoom/crop frequency axis
+
+PLOT() PARAMETER: ylim (Y-axis Time Limits)
+  Documentation: y-axis limits ([start_time, end_time]) [Hz]  [Note: docs say Hz but should be seconds]
+  GUI Implementation: MISSING - No time range selector
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: [0, 0]
+    - Impact: MEDIUM - Cannot zoom/crop time axis
+
+PLOT() PARAMETER: dm (Dispersion Measure)
+  Documentation: Dispersion measure for dedispersion [pc/cm^3]
+  GUI Implementation: MISSING - No field for dispersion measure
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: 0
+    - Impact: HIGH - Pulsar dedispersion unavailable
+
+PLOT() PARAMETER: vlsr (VLSR Frame of Reference)
+  Documentation: Display graph in VLSR frame of reference
+  GUI Implementation: MISSING - No checkbox
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: False
+    - Impact: LOW - Alternative coordinate frame unavailable
+
+PLOT() PARAMETER: meta (Display Metadata Header)
+  Documentation: Display header with date, time, and target
+  GUI Implementation: MISSING - No checkbox
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: False
+    - Impact: LOW - Observation metadata display unavailable
+
+PLOT() PARAMETER: avg_ylim (Averaged Plot Y-axis Limits)
+  Documentation: Averaged plot y-axis limits ([low, high])
+  GUI Implementation: MISSING - No range fields
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: [0, 0]
+    - Impact: LOW - Axis range customization unavailable
+
+PLOT() PARAMETER: cal_ylim (Calibrated Plot Y-axis Limits)
+  Documentation: Calibrated plot y-axis limits ([low, high])
+  GUI Implementation: MISSING - No range fields
+    - Status: NOT IMPLEMENTED
+    - Default in virgo.py: [0, 0]
+    - Impact: LOW - Axis range customization unavailable
+
+PLOT() PARAMETER: obs_parameters (Observation Parameters Dictionary)
+  Documentation: Observation parameters (reads from header if not provided)
+  GUI Implementation: PARTIAL - Only used for output, auto-load from header
+    - Status: PARTIALLY IMPLEMENTED
+    - Code at line 662: if obs_parameters != ''
+    - The plot() function auto-reads from .header file if obs_parameters empty
+    - GUI doesn't pass obs_parameters, relies on header file reading
+
+================================================================================
+3. TOOLS - IMPLEMENTATION STATUS
+================================================================================
+
+TOOL: predict() - Source Position Prediction
+  Signature: predict(lat, lon, height=0, source='', date='', plot_sun=True, plot_file='')
+  
+  GUI Implementation:
+    - Menu Item: Tools > Predict Source Position (Lines 60, 788)
+    - Handler: show_predict() at Lines 788-800
+    - Status: STUB ONLY - Placeholder window
+    - Code: ttk.Label(pred_window, text="Feature coming soon...").pack()
+    - Impact: CRITICAL - Tool not functional
+    
+  Required Parameters Not in GUI:
+    - lat (observer latitude)
+    - lon (observer longitude)  
+    - height (observer elevation) - optional, default 0
+    - source (source name to predict)
+    - date (observation date, optional)
+    - plot_sun (also plot sun position, optional)
+    - plot_file (output plot filename)
+
+TOOL: simulate() - HI Profile Simulation
+  Signature: simulate(l, b, beamwidth=0.6, v_min=-400, v_max=400, plot_file='')
+  
+  GUI Implementation:
+    - Menu Item: Tools > Simulate HI Profile (Lines 61, 802)
+    - Handler: show_simulate() at Lines 802-811
+    - Status: STUB ONLY - Placeholder window
+    - Code: ttk.Label(sim_window, text="Feature coming soon...").pack()
+    - Impact: CRITICAL - Tool not functional
+    
+  Required Parameters Not in GUI:
+    - l (galactic longitude)
+    - b (galactic latitude)
+    - beamwidth (telescope beamwidth, optional default 0.6)
+    - v_min (minimum velocity, optional default -400)
+    - v_max (maximum velocity, optional default 400)
+    - plot_file (output plot filename)
+
+TOOL: monitor_rfi() - Wideband RFI Survey
+  Signature: monitor_rfi(f_lo, f_hi, obs_parameters, data='rfi_data')
+  
+  GUI Implementation:
+    - Menu Item: Tools > Monitor RFI (Lines 62, 813)
+    - Handler: show_rfi_monitor() at Lines 813-822
+    - Status: STUB ONLY - Placeholder window
+    - Code: ttk.Label(rfi_window, text="Feature coming soon...").pack()
+    - Impact: CRITICAL - Tool not functional
+    
+  Required Parameters Not in GUI:
+    - f_lo (start frequency in Hz)
+    - f_hi (end frequency in Hz)
+    - obs_parameters (observation parameters dict)
+    - data (output directory, optional default 'rfi_data')
+
+TOOL: map_hi() - All-Sky HI Map Viewer
+  Signature: map_hi(ra=None, dec=None, plot_file='')
+  
+  GUI Implementation: MISSING - Not in Tools menu or anywhere
+    - Status: COMPLETELY MISSING
+    - The function is imported at line 22:
+      from virgo import observe, plot, predict, simulate
+    - But NO GUI interface created
+    - Impact: CRITICAL - Tool not accessible from GUI
+
+================================================================================
+4. ANTENNA/CALCULATION FUNCTIONS - NONE IMPLEMENTED
+================================================================================
+
+Function: equatorial(alt, az, lat, lon, height=0)
+  Purpose: Convert Alt/Az to RA/Dec
+  GUI Status: NOT IN GUI
+
+Function: galactic(ra, dec)
+  Purpose: Convert RA/Dec to galactic l,b
+  GUI Status: NOT IN GUI
+
+Function: frequency(wavelength)
+  Purpose: Convert wavelength to frequency
+  GUI Status: NOT IN GUI
+
+Function: wavelength(frequency)
+  Purpose: Convert frequency to wavelength
+  GUI Status: NOT IN GUI
+
+Function: gain(D, f, e=0.7, u='dBi')
+  Purpose: Estimate parabolic antenna gain
+  GUI Status: NOT IN GUI
+
+Function: A_e(gain, f)
+  Purpose: Transform gain to effective aperture
+  GUI Status: NOT IN GUI
+
+Function: beamwidth(D, f)
+  Purpose: Calculate antenna half-power beamwidth
+  GUI Status: NOT IN GUI
+
+Function: NF(T_noise, T_ref=290)
+  Purpose: Convert noise temperature to noise figure
+  GUI Status: NOT IN GUI
+
+Function: T_noise(NF, T_ref=290)
+  Purpose: Convert noise figure to noise temperature
+  GUI Status: NOT IN GUI
+
+Function: G_T(gain, T_sys)
+  Purpose: Compute gain-to-noise-temperature
+  GUI Status: NOT IN GUI
+
+Function: SEFD(A_e, T_sys)
+  Purpose: Compute system equivalent flux density
+  GUI Status: NOT IN GUI
+
+Function: snr(S, sefd, t, bw)
+  Purpose: Estimate signal-to-noise ratio (radiometer equation)
+  GUI Status: NOT IN GUI
+
+================================================================================
+5. SUMMARY TABLE: MISSING OBSERVE() PARAMETERS
+================================================================================
+
+Parameter       | Type    | Required? | GUI Status  | Impact
+----------------|---------|-----------|-------------|----------
+loc             | string  | NO        | MISSING     | CRITICAL
+ra_dec          | string  | NO        | MISSING     | CRITICAL
+az_alt          | string  | NO        | MISSING     | CRITICAL
+spectrometer    | string  | NO        | PARTIAL     | MEDIUM
+
+Note: All 9 required/core parameters are implemented
+The 3 missing parameters are optional but CRITICAL for metadata tracking
+
+================================================================================
+6. SUMMARY TABLE: MISSING PLOT() PARAMETERS
+================================================================================
+
+Parameter       | Type    | Default   | GUI Status  | Impact
+----------------|---------|-----------|-------------|----------
+slope_correction| bool    | False     | MISSING     | MEDIUM
+rfi             | list    | []        | MISSING     | HIGH
+xlim            | list    | [0,0]     | MISSING     | MEDIUM
+ylim            | list    | [0,0]     | MISSING     | MEDIUM
+dm              | float   | 0         | MISSING     | HIGH
+vlsr            | bool    | False     | MISSING     | LOW
+meta            | bool    | False     | MISSING     | LOW
+avg_ylim        | list    | [0,0]     | MISSING     | LOW
+cal_ylim        | list    | [0,0]     | MISSING     | LOW
+
+Note: 10 out of 23 plot parameters are implemented
+The 9 missing parameters are important analysis/visualization enhancements
+
+================================================================================
+7. SUMMARY TABLE: TOOLS STATUS
+================================================================================
+
+Tool            | Parameters | GUI Status      | Implementation
+----------------|-----------|-----------------|----------------
+predict()       | 7         | STUB ONLY       | Imported but not functional
+simulate()      | 6         | STUB ONLY       | Imported but not functional
+monitor_rfi()   | 4         | STUB ONLY       | Imported but not functional
+map_hi()        | 3         | NOT IN GUI      | Not imported/callable from GUI
+
+Total: 4 major tools
+Functional: 0
+Stub/Partial: 3
+Missing: 1
+
+================================================================================
+8. CODE LOCATION REFERENCE
+================================================================================
+
+Observation Tab Implementation:
+  - Line 89-268: setup_observation_tab()
+  - Line 115-217: Parameter input fields
+  - Line 383-433: start_observation() method
+  - Line 434-448: _run_observation() thread handler
+  - Line 450-464: _monitor_observation() thread handler
+  - Line 466-533: _update_live_plot() visualization
+
+Analysis Tab Implementation:
+  - Line 316-375: setup_analysis_tab()
+  - Line 319-350: File selection and processing options
+  - Line 649-695: generate_plot() method
+  - Line 697-729: export_fits() method
+  - Line 730-761: export_csv() method
+
+Tools Menu Implementation:
+  - Line 44-67: create_menu()
+  - Line 57-62: Tools menu creation
+  - Line 788-800: show_predict() stub
+  - Line 802-811: show_simulate() stub
+  - Line 813-822: show_rfi_monitor() stub
+
+Missing Implementations:
+  - No map_hi() menu item
+  - No antenna/calculation tools menu
+  - No observer location input panel
+  - No target coordinates input
+  - No RFI blanking interface
+  - No plot axis customization UI
+
+================================================================================

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Virgo Radio Telescope GUI
+Comment=Graphical interface for Virgo spectrometer and radiometer
+Exec=/home/user/Virgo/launch_gui.sh
+Icon=radio
+Terminal=false
+Categories=Science;Education;Astronomy;
+Keywords=radio;astronomy;telescope;sdr;spectrometer;
+Path=/home/user/Virgo
+StartupNotify=true

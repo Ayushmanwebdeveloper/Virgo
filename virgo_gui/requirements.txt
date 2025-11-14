@@ -1,0 +1,15 @@
+# Virgo GUI Requirements
+# Install with: pip3 install -r gui-requirements.txt
+
+# Core dependencies
+numpy>=1.19.0
+matplotlib>=3.3.0
+astropy>=4.0.0
+
+# Optional for enhanced functionality
+Pillow>=8.0.0  # For displaying plots in GUI
+
+# Note: tkinter is a system package, install with:
+# Ubuntu/Debian: sudo apt-get install python3-tk
+# Fedora: sudo dnf install python3-tkinter
+# Arch: sudo pacman -S tk
