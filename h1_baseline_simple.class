@@ -1,0 +1,60 @@
+! ============================================================================
+! H1 21cm Baseline Subtraction - SIMPLE CLASS Script
+! ============================================================================
+! Quick processing with standard parameters
+! Compatible with GILDAS CLASS nov25a+
+! ============================================================================
+
+! Quick configuration - EDIT THESE
+define character infile "your_spectrum.30m"
+define character outfile "corrected.30m"
+define integer order 2                ! 2nd order polynomial (standard)
+define real exclude_vel 300.0         ! ±300 km/s exclusion (standard)
+
+! Processing
+say "Processing H1 spectrum with CLASS..."
+file in infile
+find /line HI
+get first
+
+! Setup
+set unit v f
+set align frequency velocity
+set line HI " " 1420.405751
+
+! Define line-free windows
+clear window
+set window (0.0 - exclude_vel - 1000.0) (0.0 - exclude_vel) /velocity
+set window (0.0 + exclude_vel) (0.0 + exclude_vel + 1000.0) /velocity
+
+! Fit and subtract baseline (with iteration for RFI rejection)
+base order /iterate
+subtract
+
+! Calculate SNR
+compute maximum
+define real signal maximum
+compute rms
+define real noise rms
+define real snr signal / noise
+
+! Display results
+say "H1 Signal: " signal
+say "Noise RMS: " noise
+say "SNR: " snr
+
+if (snr .gt. 3.0) then
+  say "DETECTION: YES (SNR > 3σ)"
+else
+  say "DETECTION: MARGINAL/NO (SNR < 3σ)"
+endif
+
+! Smooth (optional - comment out if not needed)
+smooth hann 11
+
+! Save
+file out outfile single
+put
+write "corrected.dat" /formatted
+
+say "Done! Output: " outfile
